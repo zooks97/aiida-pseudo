@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=unused-argument,pointless-statement
 """Tests for the `UpfFamily` class."""
-import copy
-
 import pytest
 
 from aiida_pseudo.groups.family.upf import UpfFamily
