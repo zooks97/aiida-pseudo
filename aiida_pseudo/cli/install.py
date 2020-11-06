@@ -6,9 +6,10 @@ import shutil
 import tempfile
 
 import click
+
+from aiida.cmdline.utils import decorators, echo
 from aiida.cmdline.params import options as options_core
 from aiida.cmdline.params import types
-from aiida.cmdline.utils import decorators, echo
 
 from .params import options
 from .root import cmd_root
@@ -31,7 +32,7 @@ def cmd_install():
 @options.FAMILY_TYPE()
 @options.TRACEBACK()
 @decorators.with_dbenv()
-def cmd_install_family(archive, label, description, archive_format, family_type, traceback):
+def cmd_install_family(archive, label, description, archive_format, family_type, traceback):  # pylint: disable=too-many-arguments
     """Install a standard pseudo potential family from an ARCHIVE on the local file system or from a URL.
 
     The command will attempt to infer the archive format from the filename extension of the ARCHIVE. If this fails, the
@@ -42,7 +43,6 @@ def cmd_install_family(archive, label, description, archive_format, family_type,
     type option. If the base type is used, the pseudo potential files in the archive *have* to have filenames that
     strictly follow the format `ELEMENT.EXTENSION`, because otherwise the element cannot be determined automatically.
     """
-    # pylint: disable=too-many-arguments
     from .utils import attempt, create_family_from_archive
 
     # The `archive` is now either a `http.client.HTTPResponse` or a normal filelike object, so we get the original file
@@ -81,11 +81,12 @@ def cmd_install_sssp(version, functional, protocol, traceback):
     """
     # pylint: disable=too-many-locals
     import requests
+
     from aiida.common.files import md5_file
     from aiida.orm import Group, QueryBuilder
+
     from aiida_pseudo import __version__
     from aiida_pseudo.groups.family import SsspConfiguration, SsspFamily
-
     from .utils import attempt, create_family_from_archive
 
     configuration = SsspConfiguration(version, functional, protocol)
@@ -137,10 +138,8 @@ def cmd_install_sssp(version, functional, protocol, traceback):
 
             cutoffs[element] = {'cutoff_wfc': values['cutoff_wfc'], 'cutoff_rho': values['cutoff_rho']}
 
-        cutoffs = {'normal': cutoffs}
-
         family.description = description
-        family.set_cutoffs(cutoffs=cutoffs, default_stringency='normal')
+        family.set_cutoffs({'normal': cutoffs})
 
         echo.echo_success(f'installed `{label}` containing {family.count()} pseudo potentials')
 
